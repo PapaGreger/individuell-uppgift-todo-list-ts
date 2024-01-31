@@ -37,8 +37,34 @@ const removeTodo = (event: Event) => {
     checkTodoMoveButtons();
 }
 
-const editTodo = () => {
+const startEditTodo = (event: Event) => {
+    const todoItem = (event.target as HTMLElement).closest(".todo-list__item") as HTMLDivElement;
+    const todoDescription = todoItem?.querySelector(".todo-list__item__description") as HTMLParagraphElement;
+    todoDescription.contentEditable = "true";
+    todoDescription.focus();
 
+    todoItem.querySelector(".todo-list__item__remove-edit-wrapper__edit-button")?.classList.add("todo-list__item__remove-edit-wrapper__edit-button--disabled")
+    todoItem.querySelector(".todo-list__item__remove-edit-wrapper__save-edit-button")?.classList.remove("todo-list__item__remove-edit-wrapper__save-edit-button--disabled")
+}
+
+const saveEditTodo = (event: Event) => {
+    const todoItem = (event.target as HTMLElement).closest(".todo-list__item") as HTMLDivElement;    
+    const todoDescription = todoItem?.querySelector(".todo-list__item__description") as HTMLParagraphElement;
+    todoDescription.contentEditable = "false";
+
+    todoItem.querySelector(".todo-list__item__remove-edit-wrapper__edit-button")?.classList.remove("todo-list__item__remove-edit-wrapper__edit-button--disabled")
+    todoItem.querySelector(".todo-list__item__remove-edit-wrapper__save-edit-button")?.classList.add("todo-list__item__remove-edit-wrapper__save-edit-button--disabled")
+
+    const todoId: number = parseInt(todoItem!.id);
+    const todos: Todo[] = getSavedTodos();
+    if(todoDescription.textContent) {
+        todos.find(todo => todo.id == todoId)!.description = todoDescription.textContent;
+        todoItem.title = todoDescription.textContent;
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }
+    else {
+        todoDescription.textContent = todos.find(todo => todo.id == todoId)!.description;
+    }
 }
 
 const checkTodoMoveButtons = () => {
@@ -106,6 +132,7 @@ const displaySingleTodo = (todo: Todo) => {
     const todoListItem = document.createElement("article");
     todoListItem.classList.add("todo-list__item");
     todoListItem.id = todo.id.toString();
+    todoListItem.title = `${todo.description}`
 
     const todoListItemCheckbox = document.createElement("input");
     todoListItemCheckbox.classList.add("todo-list__item__checkbox")
@@ -166,14 +193,27 @@ const displaySingleTodo = (todo: Todo) => {
     todoListItemEditButton.classList.add("todo-list__item__remove-edit-wrapper__edit-button")
     todoListItemEditButton.type = "button";
     todoListItemEditButton.title = "Edit To-Do";
+    todoListItemEditButton.addEventListener("click", startEditTodo);
 
     const todoListItemEditButtonIcon = document.createElement("i");
     todoListItemEditButtonIcon.classList.add("todo-list__item__remove-edit-wrapper__edit-button__icon", "material-symbols-outlined");
     todoListItemEditButtonIcon.textContent = "edit";
     todoListItemEditButton.appendChild(todoListItemEditButtonIcon);
     todoListItemRemoveEditWrapper.appendChild(todoListItemEditButton);
-    todoListItem.appendChild(todoListItemRemoveEditWrapper);
+    
+    const todoListItemSaveEditButton = document.createElement("button");
+    todoListItemSaveEditButton.classList.add("todo-list__item__remove-edit-wrapper__save-edit-button", "todo-list__item__remove-edit-wrapper__save-edit-button--disabled")
+    todoListItemSaveEditButton.type = "button";
+    todoListItemSaveEditButton.title = "Save To-Do Edit";
+    todoListItemSaveEditButton.addEventListener("click", saveEditTodo);
 
+    const todoListItemSaveEditButtonIcon = document.createElement("i");
+    todoListItemSaveEditButtonIcon.classList.add("todo-list__item__remove-edit-wrapper__save-edit-button__icon", "material-symbols-outlined");
+    todoListItemSaveEditButtonIcon.textContent = "save";
+    todoListItemSaveEditButton.appendChild(todoListItemSaveEditButtonIcon);
+    todoListItemRemoveEditWrapper.appendChild(todoListItemSaveEditButton);
+    todoListItem.appendChild(todoListItemRemoveEditWrapper);
+    
     todoList.appendChild(todoListItem);
 }
 

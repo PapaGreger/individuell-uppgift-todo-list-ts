@@ -157,8 +157,14 @@ input[type="checkbox"] {
   pointer-events: none;
 }
 
+.todo-list__item__remove-edit-wrapper__edit-button--disabled,
+.todo-list__item__remove-edit-wrapper__save-edit-button--disabled {
+  display: none;
+}
+
 .todo-list__item__remove-edit-wrapper__remove-button__icon,
 .todo-list__item__remove-edit-wrapper__edit-button__icon,
+.todo-list__item__remove-edit-wrapper__save-edit-button__icon,
 .todo-list__item__move-up-down-wrapper__up-button__icon,
 .todo-list__item__move-up-down-wrapper__down-button__icon {
   aspect-ratio: 1/1;
@@ -171,6 +177,7 @@ input[type="checkbox"] {
 
 .todo-list__item__remove-edit-wrapper__remove-button__icon:hover,
 .todo-list__item__remove-edit-wrapper__edit-button__icon:hover,
+.todo-list__item__remove-edit-wrapper__save-edit-button__icon:hover,
 .todo-list__item__move-up-down-wrapper__up-button__icon:hover,
 .todo-list__item__move-up-down-wrapper__down-button__icon:hover {
   scale: 1.05;
@@ -178,6 +185,7 @@ input[type="checkbox"] {
 
 .todo-list__item__remove-edit-wrapper__remove-button__icon:active,
 .todo-list__item__remove-edit-wrapper__edit-button__icon:active,
+.todo-list__item__remove-edit-wrapper__save-edit-button__icon:active,
 .todo-list__item__move-up-down-wrapper__up-button__icon:active,
 .todo-list__item__move-up-down-wrapper__down-button__icon:active {
   color: white;
