@@ -1,3 +1,4 @@
+const createTodo = document.querySelector(".create-todo") as HTMLDivElement;
 const createTodoInput = document.querySelector(".create-todo__input") as HTMLInputElement;
 const defaultCreateTodoInputPlaceholder: string = createTodoInput.placeholder;
 const createTodoButton = document.querySelector(".create-todo__button") as HTMLButtonElement;
@@ -62,7 +63,8 @@ const displaySingleTodo = (todo: Todo) => {
 
 const addTodo = () => {
     if(!createTodoInput.value) {
-        createTodoInput.placeholder = "Enter a To-Do!"
+        createTodo.classList.add("create-todo--error");
+        createTodoInput.placeholder = "Description required!"
         return;
     }
     
@@ -73,6 +75,7 @@ const addTodo = () => {
     }
     localStorage.setItem("todos", JSON.stringify([...getSavedTodos(), newTodo]))
     
+    createTodo.classList.remove("create-todo--error");
     createTodoInput.placeholder = defaultCreateTodoInputPlaceholder;
     createTodoInput.value = "";
     
@@ -92,9 +95,11 @@ const moveTodo = () => {
     //vg funktion: drag drop move items
 }
 
-const removeAllTodos = () => {
-
+const clearAllTodos = () => {
+    localStorage.setItem("todos", JSON.stringify([]));
+    todoList.innerHTML = "";
 }
+clearTodoListButton.addEventListener("click", clearAllTodos);
 
 getSavedTodos().forEach(item => {
     displaySingleTodo(item);
