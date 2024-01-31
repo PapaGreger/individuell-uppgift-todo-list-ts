@@ -34,14 +34,71 @@ const removeTodo = (event: Event) => {
     todoList.removeChild(todoItem);
     const todos: Todo[] = getSavedTodos().filter(todo => todo.id != todoId);
     localStorage.setItem("todos", JSON.stringify(todos));
+    checkTodoMoveButtons();
 }
 
 const editTodo = () => {
 
 }
 
-const moveTodo = () => {
-    //vg funktion: drag drop move items
+const checkTodoMoveButtons = () => {
+    //Reset all
+    todoList.childNodes.forEach(todo => {
+      const todoListItemMoveUpButton = (todo as HTMLLIElement)?.querySelector(
+        ".todo-list__item__move-up-down-wrapper__up-button"
+      ) as HTMLButtonElement;
+      todoListItemMoveUpButton.classList.remove("todo-list__item__move-up-down-wrapper__up-button--disabled");
+      todoListItemMoveUpButton.disabled = false;
+  
+      const todoListItemMoveDownButton = (todo as HTMLElement)?.querySelector(
+        ".todo-list__item__move-up-down-wrapper__down-button"
+      ) as HTMLButtonElement;
+      todoListItemMoveDownButton.classList.remove("todo-list__item__move-up-down-wrapper__down-button--disabled");
+      todoListItemMoveDownButton.disabled = false;
+    });
+  
+    //Hide correct
+    if (todoList.childElementCount > 0) {
+      const firstTodoListItemMoveUpButton = (todoList.firstChild as HTMLElement)?.querySelector(
+        ".todo-list__item__move-up-down-wrapper__up-button"
+      ) as HTMLButtonElement;
+      firstTodoListItemMoveUpButton.classList.add("todo-list__item__move-up-down-wrapper__up-button--disabled");
+      firstTodoListItemMoveUpButton.disabled = true;
+  
+      const lastTodoListItemMoveDownButton = (todoList.lastChild as HTMLElement)?.querySelector(
+        ".todo-list__item__move-up-down-wrapper__down-button"
+      ) as HTMLButtonElement;
+      lastTodoListItemMoveDownButton.classList.add("todo-list__item__move-up-down-wrapper__down-button--disabled");
+      lastTodoListItemMoveDownButton.disabled = true;
+    }
+  };
+
+type MoveDirection = "up" | "down";
+const moveTodo = (event: Event, moveDirection: MoveDirection) => {
+    const todoItem = (event.target as HTMLButtonElement)!.closest(".todo-list__item") as HTMLDivElement;
+    const sibling = (moveDirection === "up" ? todoItem.previousSibling : todoItem.nextSibling) as HTMLDivElement
+
+    if (sibling) {
+        todoList.insertBefore(todoItem, moveDirection === "up" ? sibling : sibling.nextSibling);
+
+        //Update saved order
+        const todos = getSavedTodos();
+    
+        const todoObjectIndex = todos.findIndex(
+          (todo) => todo.id == parseInt(todoItem!.id)
+        );
+        const nextSiblingIndex = todos.findIndex(
+          (todo) => todo.id == parseInt((sibling as HTMLDivElement).id)
+        );
+    
+        const tempTodoObject = todos[todoObjectIndex];
+        todos[todoObjectIndex] = todos[nextSiblingIndex];
+        todos[nextSiblingIndex] = tempTodoObject;
+    
+        localStorage.setItem("todos", JSON.stringify(todos));
+      }
+
+    checkTodoMoveButtons();
 }
 
 
@@ -61,6 +118,34 @@ const displaySingleTodo = (todo: Todo) => {
     todoListItemDescription.classList.add("todo-list__item__description");
     todoListItemDescription.textContent = `${todo.description}`;
     todoListItem.appendChild(todoListItemDescription);
+
+    const todoListItemMoveUpDownWrapper = document.createElement("div");
+    todoListItemMoveUpDownWrapper.classList.add("todo-list__item__move-up-down-wrapper")
+
+    const todoListItemMoveUpButton = document.createElement("button");
+    todoListItemMoveUpButton.classList.add("todo-list__item__move-up-down-wrapper__up-button");
+    todoListItemMoveUpButton.type = "button";
+    todoListItemMoveUpButton.addEventListener("click", (event: Event) => moveTodo(event, "up"));
+
+    const todoListMoveUpButtonIcon = document.createElement("i");
+    todoListMoveUpButtonIcon.classList.add("todo-list__item__move-up-down-wrapper__up-button__icon", "material-symbols-outlined");
+    todoListMoveUpButtonIcon.textContent = "keyboard_arrow_up";
+    todoListItemMoveUpButton.appendChild(todoListMoveUpButtonIcon);
+
+    todoListItemMoveUpDownWrapper.appendChild(todoListItemMoveUpButton);
+
+    const todoListItemMoveDownButton = document.createElement("button");
+    todoListItemMoveDownButton.classList.add("todo-list__item__move-up-down-wrapper__down-button");
+    todoListItemMoveDownButton.type = "button";
+    todoListItemMoveDownButton.addEventListener("click", (event: Event) => moveTodo(event, "down"));
+
+    const todoListMoveDownButtonIcon = document.createElement("i");
+    todoListMoveDownButtonIcon.classList.add("todo-list__item__move-up-down-wrapper__down-button__icon", "material-symbols-outlined");
+    todoListMoveDownButtonIcon.textContent = "keyboard_arrow_down";
+    todoListItemMoveDownButton.appendChild(todoListMoveDownButtonIcon);
+
+    todoListItemMoveUpDownWrapper.appendChild(todoListItemMoveDownButton)
+    todoListItem.appendChild(todoListItemMoveUpDownWrapper);
 
     const todoListItemRemoveEditWrapper = document.createElement("div");
     todoListItemRemoveEditWrapper.classList.add("todo-list__item__remove-edit-wrapper");
@@ -111,6 +196,7 @@ const addTodo = () => {
     createTodoInput.value = "";
     
     displaySingleTodo(newTodo);
+    checkTodoMoveButtons();
 }
 createTodoButton?.addEventListener("click", addTodo);
 
@@ -120,6 +206,9 @@ const clearAllTodos = () => {
 }
 clearTodoListButton.addEventListener("click", clearAllTodos);
 
-getSavedTodos().forEach(item => {
-    displaySingleTodo(item);
-})
+{
+    getSavedTodos().forEach(item => {
+        displaySingleTodo(item);
+    })
+    checkTodoMoveButtons();
+}
