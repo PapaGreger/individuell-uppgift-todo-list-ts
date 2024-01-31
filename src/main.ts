@@ -22,15 +22,18 @@ const toggleTodoDone = (event: Event) => {
     const todoId: number = parseInt(todoItem!.id);
     
     const todos: Todo[] = getSavedTodos();
-    const todo = todos.find(todo => todo.id == todoId);
-    todo!.done = checkbox.checked;
+    todos.find(todo => todo.id == todoId)!.done = checkbox.checked;
 
     localStorage.setItem("todos", JSON.stringify(todos));
 }
 
-
-const removeTodo = () => {
-
+const removeTodo = (event: Event) => {
+    const todoItem = (event.target as HTMLElement).closest(".todo-list__item") as HTMLDivElement;
+    const todoId: number = parseInt(todoItem!.id);
+    
+    todoList.removeChild(todoItem);
+    const todos: Todo[] = getSavedTodos().filter(todo => todo.id != todoId);
+    localStorage.setItem("todos", JSON.stringify(todos));
 }
 
 const editTodo = () => {
@@ -66,6 +69,7 @@ const displaySingleTodo = (todo: Todo) => {
     todoListItemRemoveButton.classList.add("todo-list__item__remove-edit-wrapper__remove-button")
     todoListItemRemoveButton.type = "button";
     todoListItemRemoveButton.title = "Remove To-Do";
+    todoListItemRemoveButton.addEventListener("click", removeTodo);
 
     const todoListItemRemoveButtonIcon = document.createElement("i");
     todoListItemRemoveButtonIcon.classList.add("todo-list__item__remove-edit-wrapper__remove-button__icon", "material-symbols-outlined");
