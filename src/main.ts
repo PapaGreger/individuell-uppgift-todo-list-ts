@@ -16,6 +16,32 @@ const getSavedTodos = (): Todo[] => {
     return  todosString ? JSON.parse(todosString) : [];
 }
 
+const toggleTodoDone = (event: Event) => {
+    const checkbox = (event.target as HTMLInputElement);
+    const todoItem = checkbox.closest(".todo-list__item") as HTMLDivElement;
+    const todoId: number = parseInt(todoItem!.id);
+    
+    const todos: Todo[] = getSavedTodos();
+    const todo = todos.find(todo => todo.id == todoId);
+    todo!.done = checkbox.checked;
+
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+
+const removeTodo = () => {
+
+}
+
+const editTodo = () => {
+
+}
+
+const moveTodo = () => {
+    //vg funktion: drag drop move items
+}
+
+
 const displaySingleTodo = (todo: Todo) => {
     const todoListItem = document.createElement("article");
     todoListItem.classList.add("todo-list__item");
@@ -25,6 +51,7 @@ const displaySingleTodo = (todo: Todo) => {
     todoListItemCheckbox.classList.add("todo-list__item__checkbox")
     todoListItemCheckbox.type = "checkbox";
     todoListItemCheckbox.checked = todo.done;
+    todoListItemCheckbox.addEventListener("change", toggleTodoDone);
     todoListItem.appendChild(todoListItemCheckbox);
 
     const todoListItemDescription = document.createElement("p");
@@ -82,18 +109,6 @@ const addTodo = () => {
     displaySingleTodo(newTodo);
 }
 createTodoButton?.addEventListener("click", addTodo);
-
-const removeTodo = () => {
-
-}
-
-const editTodo = () => {
-
-}
-
-const moveTodo = () => {
-    //vg funktion: drag drop move items
-}
 
 const clearAllTodos = () => {
     localStorage.setItem("todos", JSON.stringify([]));
