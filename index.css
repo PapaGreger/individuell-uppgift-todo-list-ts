@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 
+:root {
+  --warning-color: rgb(255, 40, 40);
+}
+
 *:not(head, script) {
   box-sizing: border-box;
   display: block;
@@ -51,6 +55,10 @@ input[type="checkbox"] {
   gap: 0.5rem;
 }
 
+.create-todo--error {
+  border-color: var(--warning-color);
+}
+
 .create-todo__input {
   flex: 1 1 0;
 }
@@ -78,10 +86,10 @@ input[type="checkbox"] {
 /*Clear To-Do list*/
 .clear-todo-list-button {
   padding: 0.25rem 1rem;
-  border: 2px solid rgb(255, 40, 40);
+  border: 2px solid var(--warning-color);
   border-radius: 0.5rem;
   color: white;
-  background-color: rgb(255, 40, 40);
+  background-color: var(--warning-color);
   transition: 0.3s;
 }
 
@@ -90,7 +98,7 @@ input[type="checkbox"] {
 }
 
 .clear-todo-list-button:active {
-  color: rgb(255, 40, 40);
+  color: var(--warning-color);
   background-color: white;
   transition: 0.1s;
 }
